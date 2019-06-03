@@ -1,0 +1,14 @@
+:host {
+  .toolbar {
+    display: flex;
+  }
+  gridster {
+    display: flex;
+    height: calc(100vh - 115px);
+    flex-direction: column;
+  }
+}
+
+.power-container {
+  height: 100%;
+}

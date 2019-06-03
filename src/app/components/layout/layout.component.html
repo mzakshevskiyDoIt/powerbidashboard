@@ -1,0 +1,23 @@
+<div class="toolbar">
+  <button 
+  color="primary"
+  mat-raised-button
+  (click)="logOut()">Logout</button>
+</div>
+
+
+<gridster [options]="options">
+  <gridster-item *ngFor="let item of layout" [item]="item">
+      <button
+      color="warn"
+      mat-raised-button
+      (click)="layoutService.deleteItem(item)"
+    >
+      Delete Item
+    </button>
+    <div #iframeContainer
+    class="power-container"
+     id={{item.id}}>
+    </div>
+  </gridster-item>
+</gridster>

@@ -1,0 +1,17 @@
+// .form-auth, .button-wrapper {
+//   padding-top: 5%;
+//   width: 30px;
+//   margin: 0 auto;
+// }
+.button-wrapper {
+  padding-top: 5%; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.box button {
+  color: skyblue;
+  width: 100px;
+  height: 100px;
+}

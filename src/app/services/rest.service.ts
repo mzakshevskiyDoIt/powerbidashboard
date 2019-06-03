@@ -5,11 +5,10 @@ import { HttpClient, HttpParams } from '@angular/common/http';
   providedIn: 'root'
 })
 export class RestService {
-  private url = 'http://192.168.88.8:8080/powerbi/embed/reports';
+  private url = 'http://192.168.88.8:8080/api/powerbi/embed/reports';
   constructor(private http: HttpClient) { }
 
-  public getTokens(email) {
-    const params = new HttpParams().set('email', email);
-    return this.http.get(this.url, {params});
+  public getTokens() {
+    return this.http.get(this.url);
   }
 }

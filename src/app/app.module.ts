@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { GridsterModule } from 'angular-gridster2';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatInputModule, MatButtonModule, MatFormFieldModule, MatFormFieldControl } from '@angular/material';
+import { MatInputModule, MatButtonModule, MatFormFieldModule, MatDialogModule } from '@angular/material';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 
@@ -14,43 +14,41 @@ import { AutentificationComponent } from './components/autentification/autentifi
 import { AuthGuardGuard } from './auth-guard.guard';
 import { MsAdalAngular6Module, MsAdalAngular6Service, AuthenticationGuard } from 'microsoft-adal-angular6';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { ErrorDialogComponent } from './error-handler/error-dialog.component';
+import { ErrorDialogService } from './error-handler/error-dialog.service';
+
+import { CONFIG } from '../assets/config/config.dev';
 
 
 const appRoutes: Routes = [
   { path: '', redirectTo: 'login',  pathMatch: 'full'},
   { path: 'login', component: AutentificationComponent},
-  { path: 'dashboard', component: LayoutComponent, canActivate: [AuthGuardGuard]},
+  { path: 'dashboard', component: LayoutComponent, canActivate: [AuthenticationGuard]},
 ];
 
 @NgModule({
   declarations: [
     AppComponent,
     LayoutComponent,
-    AutentificationComponent
+    AutentificationComponent,
+    ErrorDialogComponent
   ],
   imports: [
     BrowserAnimationsModule,
     MatInputModule,
     MatFormFieldModule,
     MatButtonModule,
+    MatDialogModule,
     HttpClientModule,
     BrowserModule,
     RouterModule.forRoot(appRoutes),
     GridsterModule,
     FormsModule,
     ReactiveFormsModule,
-    MsAdalAngular6Module.forRoot({
-      tenant: '2d595d74-e5c3-491a-b1bc-0f04aff3a63c',
-      clientId: 'f4d47aca-92ff-406f-a9ff-6b2df64f1893',
-      redirectUri: window.location.origin,
-      endpoints: {
-        'http://localhost': 'http://localhost/4200/login'
-      },
-      navigateToLoginRequestUrl: false,
-      cacheLocation: 'localStorage',
-    })
+    MsAdalAngular6Module.forRoot(CONFIG)
   ],
   providers: [
+    ErrorDialogService,
     AuthGuardGuard,
     AuthenticationGuard,
     {
@@ -59,6 +57,7 @@ const appRoutes: Routes = [
       multi   : true,
     },
   ],
+  entryComponents: [ErrorDialogComponent],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

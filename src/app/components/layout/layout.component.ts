@@ -1,10 +1,11 @@
-import { Component, OnInit, Renderer2, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, DoCheck, AfterViewInit, AfterContentInit } from '@angular/core';
 import { GridsterConfig, GridsterItem } from 'angular-gridster2';
 import { LayoutService } from '../../services/layout.service';
 import { RestService } from '../../services/rest.service';
-import { UUID } from 'angular2-uuid';
 import * as pbi from 'powerbi-client';
 import { MsAdalAngular6Service } from 'microsoft-adal-angular6';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 
 @Component({
@@ -12,7 +13,7 @@ import { MsAdalAngular6Service } from 'microsoft-adal-angular6';
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.scss']
 })
-export class LayoutComponent implements OnInit {
+export class LayoutComponent implements OnInit, OnDestroy {
 
   get options(): GridsterConfig {
     return this.layoutService.options;
@@ -20,16 +21,21 @@ export class LayoutComponent implements OnInit {
   get layout(): GridsterItem[] {
     return this.layoutService.layout;
   }
+  onDestroy: Subject<boolean> = new Subject<boolean>();
   powerBiSettings: any;
-  id: string;
+  id: Array<{id: string, powerBiSettings: any}> = [];
+  num = 1;
   constructor(
     private layoutService: LayoutService,
     private restService: RestService,
     private adalSvc: MsAdalAngular6Service
   ) { }
-
+  ngOnDestroy() {
+    this.onDestroy.next(true);
+  }
   ngOnInit() {
-    this.restService.getTokens(this.getQueryParameter('email'))
+    this.restService.getTokens()
+    .pipe(takeUntil(this.onDestroy))
     .subscribe(data => {
       if (Array.isArray(data)) {
         data.forEach(element => {
@@ -56,12 +62,11 @@ export class LayoutComponent implements OnInit {
       }
     }, 0);
   }
-  private getQueryParameter(key: string): string {
-    const parameters = new URLSearchParams(window.location.search);
-    return parameters.get(key);
-  }
+
   addItem(element) {
-    this.layoutService.addItem().subscribe(data => {
+    this.layoutService.addItem()
+    .pipe(takeUntil(this.onDestroy))
+    .subscribe(data => {
       this.buildConfig(element, data);
     });
   }
@@ -72,5 +77,4 @@ export class LayoutComponent implements OnInit {
     const powerbi = new pbi.service.Service(pbi.factories.hpmFactory, pbi.factories.wpmpFactory, pbi.factories.routerFactory);
     const report = powerbi.embed(reportContainer , configs);
   }
-
 }

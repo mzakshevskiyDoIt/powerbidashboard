@@ -2,8 +2,6 @@ import { Component, OnInit, ContentChild, ViewChild } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MsAdalAngular6Service } from 'microsoft-adal-angular6';
-import { MsService } from '../../services/ms.service';
-import { CodeNode } from 'source-list-map';
 
 
 
@@ -19,7 +17,6 @@ export class AutentificationComponent implements OnInit {
   constructor(
     private adalSvc: MsAdalAngular6Service,
     private router: Router,
-    private ms: MsService
   ) {   }
    private getQueryParameter(key: string): string {
     const parameters = new URLSearchParams(window.location.search);
@@ -29,16 +26,11 @@ export class AutentificationComponent implements OnInit {
 
 
   ngOnInit() {
-    const code = this.getQueryParameter('code');
-    if (code) {
-      localStorage.setItem('code', code);
-    }
-    console.log(localStorage);
     this.adalSvc.acquireToken('https://graph.microsoft.com').subscribe((token: string) => {
       localStorage.setItem('embedded', token);
       this.token = token;
       if (token) {
-       // this.submit();
+        this.submit();
       }
     });
     this.authForm = new FormGroup({
@@ -48,16 +40,12 @@ export class AutentificationComponent implements OnInit {
   }
 
   submit() {
-    if (!localStorage.getItem('code')) {
-      this.ms.auth();
-    } else {
-      this.router.navigate(
-        ['dashboard'],
-        {queryParams: {
-          email: this.adalSvc.LoggedInUserEmail
-        }
-      });
-    }
+    this.router.navigate(
+      ['dashboard'],
+      {queryParams: {
+        email: this.adalSvc.LoggedInUserEmail
+      }
+    });
   }
 
 }
